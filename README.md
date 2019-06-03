@@ -1,14 +1,14 @@
-Background
+# Background
 
-Pipeline
+# Pipeline
 
 1. Data download
 2. Pre-processing
 3. 
 
-Pipeline Steps
+# Pipeline Steps
 
 1. Data download - SRA-Explorer
     Illumina datasets were downloaded.
 
-Conclusion
+# Conclusion
