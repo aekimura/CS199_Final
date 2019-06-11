@@ -78,4 +78,78 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR151/004/SRR1514794/SRR1514794_2.fa
 
 ### 3. Preprocessing
 
+>a) Clean Reference Genome Fasta: The script "clean_reference.sh" removes unwanted characters from the fasta headers of the reference genome and replaces them with numbers.
+
+```
+#!/bin/bash
+cat S288C_reference_sequence_R64-2-1_20150113.fsa | sed 's/>ref|NC_001133| [org=Saccharomyces cerevisiae] [strain=S288C] [moltype=genomic] [chromosome=I]/I/g' | awk '/^>/{print ">" ++i; next}{print}' > S288C_reference_sequence_R64-2-1_20150113_new.fsa
+```
+
+>b) Index Building: Hisat2 builds an index for the reference genome which is utilized later. 
+
+```
+#!/bin/bash
+source ~/.miniconda3rc
+conda activate hisat2 
+
+hisat2-build -f S288C_reference_sequence_R64-2-1_20150113_new.fsa S288C
+
+conda deactivate
+```
+
+>c) GFF to GTF Conversion: Gffread is used to convert the reference gff file to a gtf file for use later.
+
+```
+#!/bin/bash
+source ~/.miniconda3rc
+conda activate hisat2 
+
+gffread saccharomyces_cerevisiae_R64-2-1_20150113.gff -T -o S288C.gtf
+
+conda deactivate
+```
+
+>d) Fastq Trimming: Trimmomatic release 0.36 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
+
+```
+#!/bin/bash
+SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
+
+source ~/.miniconda3rc
+conda activate trimmomatic
+
+java -jar trimmomatic-0.36.jar \
+PE -phred33 \
+${SAMPLE}_1.fastq.gz \
+${SAMPLE}_2.fastq.gz \
+${SAMPLE}_1_paired.fastq.gz \
+${SAMPLE}_1_unpaired.fastq.gz \
+${SAMPLE}_2_paired.fastq.gz \
+${SAMPLE}_2_unpaired.fastq.gz \
+ILLUMINACLIP:data/users/aekimura/Trimmomatic-0.36/adapters/TruSeq3-PE.fa:2:30:10 \
+LEADING:0 \
+TRAILING:0 \
+SLIDINGWINDOW:4:15 \
+MINLEN:5 \
+AVGQUAL:20
+
+conda deactivate
+```
+
+>e) Fastq Quality Check: Fastqc measures the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
+
+```
+#!/bin/bash
+
+source ~/.miniconda3rc
+conda activate hisat2 
+
+SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
+
+fastqc ${SAMPLE}_1.fastq.gz
+fastqc ${SAMPLE}_2.fastq.gz
+
+conda deactivate
+```
+
 # Conclusion
