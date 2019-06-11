@@ -2,18 +2,16 @@
 
 # Pipeline
 
-1. Environment Set-Up
-2. Data download
-3. Pre-processing
-4. 
+##### 1. Environment Set-Up
+##### 2. Data download
+##### 3. Pre-processing
+##### 4. 
 
 # Pipeline Steps
 
 **1. Environment Set-Up - Miniconda & .yml**
 
-    First Miniconda must be installed and then the provided .yml files can be used to create the environments to 
-    complete the rest of the pipeline steps.  To download and set-up Miniconda, enter the following commands in 
-    order as they are required. Statments in all caps denote actions to complete.
+>First Miniconda must be installed and then the provided .yml files can be used to create the environments to complete the rest of the pipeline steps.  To download and set-up Miniconda, enter the following commands in order as they are required. Statments in all caps denote actions to complete.
     
  ```ruby
  ### Miniconda3 Installation ###
@@ -34,8 +32,7 @@
  conda config --add channels conda-forge
  ```
  
-    After Miniconda set-up is completed do not exit conda and the three environments (Hisat2, Trimmomatic, and R) 
-    can be created using the .yml files
+ >After Miniconda set-up is completed do not exit conda and the three environments (Hisat2, Trimmomatic, and R) can be created using the .yml files
     
  ```ruby
  ### Environment Set-Up ###
@@ -46,6 +43,6 @@
 
 **2. Data download - SRA-Explorer**
 
-    Illumina datasets were obtained by searching for relevent Illumina datasets for .
+>Illumina datasets were obtained by searching for relevent Illumina datasets for .
 
 # Conclusion
