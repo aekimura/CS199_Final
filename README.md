@@ -2,9 +2,11 @@
 
 # Pipeline
 
-[**1. Environment Setup - Miniconda & .yml**](#1-environment-setup)
+[**1. Environment Setup**](#1-environment-setup)
 
-[**2. Data Download - SRA-Explorer**](#2-data-download)
+[**2. Data Download**](#2-data-download)
+
+[**3. Preprocessing**](#3-preprocessing)
 
 # Pipeline Steps
 
@@ -43,5 +45,7 @@
 #### 2. Data Download
 
 >Illumina datasets were obtained by searching for relevent Illumina datasets for .
+
+#### 3. Preprocessing
 
 # Conclusion
