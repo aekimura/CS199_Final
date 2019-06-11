@@ -2,14 +2,13 @@
 
 # Pipeline
 
-##### 1. Environment Set-Up
-##### 2. Data download
-##### 3. Pre-processing
-##### 4. 
+[**1. Environment Setup - Miniconda & .yml**](#1-environment-setup)
+
+[**2. Data Download - SRA-Explorer**](#2-data-download)
 
 # Pipeline Steps
 
-**1. Environment Set-Up - Miniconda & .yml**
+#### 1. Environment Setup
 
 >First Miniconda must be installed and then the provided .yml files can be used to create the environments to complete the rest of the pipeline steps.  To download and set-up Miniconda, enter the following commands in order as they are required. Statments in all caps denote actions to complete.
     
@@ -41,7 +40,7 @@
  conda env create -f r_env.yml
  ```
 
-**2. Data download - SRA-Explorer**
+#### 2. Data Download
 
 >Illumina datasets were obtained by searching for relevent Illumina datasets for .
 
