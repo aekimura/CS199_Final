@@ -85,7 +85,7 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR151/004/SRR1514794/SRR1514794_2.fa
 cat S288C_reference_sequence_R64-2-1_20150113.fsa | sed 's/>ref|NC_001133| [org=Saccharomyces cerevisiae] [strain=S288C] [moltype=genomic] [chromosome=I]/I/g' | awk '/^>/{print ">" ++i; next}{print}' > S288C_reference_sequence_R64-2-1_20150113_new.fsa
 ```
 
->b) Index Building: Hisat2 builds an index for the reference genome which is utilized later. 
+>b) Index Building: Hisat2 v. 2.1.0 builds an index for the reference genome which is utilized later. 
 
 ```
 #!/bin/bash
@@ -97,7 +97,7 @@ hisat2-build -f S288C_reference_sequence_R64-2-1_20150113_new.fsa S288C
 conda deactivate
 ```
 
->c) GFF to GTF Conversion: Gffread is used to convert the reference gff file to a gtf file for use later.
+>c) GFF to GTF Conversion: Gffread v. 0.11.4 was used to convert the reference gff file to a gtf file for use later.
 
 ```
 #!/bin/bash
@@ -109,7 +109,7 @@ gffread saccharomyces_cerevisiae_R64-2-1_20150113.gff -T -o S288C.gtf
 conda deactivate
 ```
 
->d) Fastq Trimming: Trimmomatic release 0.36 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
+>d) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
 
 ```
 #!/bin/bash
@@ -136,7 +136,7 @@ AVGQUAL:20
 conda deactivate
 ```
 
->e) Fastq Quality Check: Fastqc measures the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
+>e) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
 
 ```
 #!/bin/bash
