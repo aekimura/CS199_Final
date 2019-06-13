@@ -32,7 +32,7 @@
  conda config --add channels conda-forge
  ```
  
- >After Miniconda set-up is completed do not exit conda and the three environments (Hisat2, Trimmomatic, and R) can be created using the .yml files
+ >After Miniconda set-up is completed do not exit conda.  Then create the three environments (Hisat2, Trimmomatic, and R) can be created using the .yml files
     
  ```ruby
  conda env create -f hisat2_env.yml
@@ -76,13 +76,27 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR151/004/SRR1514794/SRR1514794_2.fa
 
 ### 3. Preprocessing
 
->a) Clean Reference Genome Fasta: The script "clean_reference.sh" removes unwanted characters from the fasta headers of the reference genome and replaces them with numbers.
+>a) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
+
+```
+source ~/.miniconda3rc
+conda activate hisat2 
+
+SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
+
+fastqc ${SAMPLE}_1.fastq.gz
+fastqc ${SAMPLE}_2.fastq.gz
+
+conda deactivate
+```
+
+>b) Clean Reference Genome Fasta: The script "clean_reference.sh" removes unwanted characters from the fasta headers of the reference genome and replaces them with numbers.
 
 ```
 cat S288C_reference_sequence_R64-2-1_20150113.fsa | sed 's/>ref|NC_001133| [org=Saccharomyces cerevisiae] [strain=S288C] [moltype=genomic] [chromosome=I]/I/g' | awk '/^>/{print ">" ++i; next}{print}' > S288C_reference_sequence_R64-2-1_20150113_new.fsa
 ```
 
->b) Index Building: Hisat2 v. 2.1.0 builds an index for the reference genome which is utilized later. 
+>c) Index Building: Hisat2 v. 2.1.0 builds an index for the reference genome which is utilized later. 
 
 ```
 source ~/.miniconda3rc
@@ -93,7 +107,7 @@ hisat2-build -f S288C_reference_sequence_R64-2-1_20150113_new.fsa S288C
 conda deactivate
 ```
 
->c) GFF to GTF Conversion: Gffread v. 0.11.4 was used to convert the reference gff file to a gtf file for use later.
+>d) GFF to GTF Conversion: Gffread v. 0.11.4 was used to convert the reference gff file to a gtf file for use later.
 
 ```
 source ~/.miniconda3rc
@@ -104,7 +118,7 @@ gffread saccharomyces_cerevisiae_R64-2-1_20150113.gff -T -o S288C.gtf
 conda deactivate
 ```
 
->d) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
+>e) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
 
 ```
 SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
@@ -126,20 +140,6 @@ TRAILING:0 \
 SLIDINGWINDOW:4:15 \
 MINLEN:5 \
 AVGQUAL:20
-
-conda deactivate
-```
-
->e) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
-
-```
-source ~/.miniconda3rc
-conda activate hisat2 
-
-SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
-
-fastqc ${SAMPLE}_1.fastq.gz
-fastqc ${SAMPLE}_2.fastq.gz
 
 conda deactivate
 ```
