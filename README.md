@@ -45,7 +45,6 @@
 >a) Reference Genome: For this experiment the genome [Saccharomyces cerevisiae strain S288C release R64-2-1](https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/) was used as a reference. The download of the required reference genome files (fasta and gff) is handled by the script "reference_download.sh".
 
 ```
-#!/usr/bin/env bash
 wget https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-2-1_20150113.tgz
 tar xvzf S288C_reference_genome_R64-2-1_20150113.tgz
 cd S288C_reference_genome_R64-2-1_20150113
@@ -56,7 +55,6 @@ mv S288C_reference_sequence_R64-2-1_20150113.fsa ../../
 >b) Datasets: Illumina datasets were obtained by searching SRA-Explorer for relevent Illumina datasets for this project.  The data used for this experiment had to be Illumina paired-end data from Saccharomyces cerevisiae strain S288C. Illumina data downloading is handled by the script "fastq_download.sh".
 
 ```
-#!/usr/bin/env bash
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR125/000/SRR1257640/SRR1257640_1.fastq.gz -o SRR1257640_1.fastq.gz
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR125/000/SRR1257640/SRR1257640_2.fastq.gz -o SRR1257640_2.fastq.gz
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR125/003/SRR1257793/SRR1257793_1.fastq.gz -o SRR1257793_1.fastq.gz
@@ -81,14 +79,12 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR151/004/SRR1514794/SRR1514794_2.fa
 >a) Clean Reference Genome Fasta: The script "clean_reference.sh" removes unwanted characters from the fasta headers of the reference genome and replaces them with numbers.
 
 ```
-#!/bin/bash
 cat S288C_reference_sequence_R64-2-1_20150113.fsa | sed 's/>ref|NC_001133| [org=Saccharomyces cerevisiae] [strain=S288C] [moltype=genomic] [chromosome=I]/I/g' | awk '/^>/{print ">" ++i; next}{print}' > S288C_reference_sequence_R64-2-1_20150113_new.fsa
 ```
 
 >b) Index Building: Hisat2 v. 2.1.0 builds an index for the reference genome which is utilized later. 
 
 ```
-#!/bin/bash
 source ~/.miniconda3rc
 conda activate hisat2 
 
@@ -100,7 +96,6 @@ conda deactivate
 >c) GFF to GTF Conversion: Gffread v. 0.11.4 was used to convert the reference gff file to a gtf file for use later.
 
 ```
-#!/bin/bash
 source ~/.miniconda3rc
 conda activate hisat2 
 
@@ -112,7 +107,6 @@ conda deactivate
 >d) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
 
 ```
-#!/bin/bash
 SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
 
 source ~/.miniconda3rc
@@ -139,8 +133,6 @@ conda deactivate
 >e) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
 
 ```
-#!/bin/bash
-
 source ~/.miniconda3rc
 conda activate hisat2 
 
