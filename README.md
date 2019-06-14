@@ -12,6 +12,8 @@
 
 [**5. R Analysis**](#5-r-analysis)
 
+[**6. Analyze Significant Transcripts**](#6-analyze-significant-transcripts)
+
 # Pipeline Steps
 
 ### 1. Environment Setup
@@ -433,6 +435,16 @@ sig_tn_de = sigp[sigde,]
 o = order(sig_tn_de[,"qval"], -abs(sig_tn_de[,"de"]), decreasing=FALSE)
 output = sig_tn_de[o,c("gene_name","id","fc","pval","qval","de")]
 output[1:25,c(1,4,5)]
+```
+
+### 6. Analyze Significant Transcripts
+
+>a) 
+
+```
+ballgown::transcriptNames(bg_genome)[582]
+grep -a "MSTRG.347.810" stringtie_merged.gtf | head -n 1 > MSTRG.347.810.bed
+bedtools getfasta -fi S288C.fa -bed MSTRG.347.810.bed -fo MSTRG.347.810.bed.fa.out
 ```
 
 # Conclusion
