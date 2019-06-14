@@ -8,6 +8,10 @@
 
 [**3. Preprocessing**](#3-preprocessing)
 
+[**4. Map Sample Reads, Assemble Transcripts, and Generate Ballgown Tables**](#4-map-reads)
+
+[**5. R Analysis**](#5-r-analysis)
+
 # Pipeline Steps
 
 ### 1. Environment Setup
@@ -143,5 +147,40 @@ AVGQUAL:20
 
 conda deactivate
 ```
+
+### 4. Map Reads
+
+>a) Map Sample Reads to Reference Genome: 
+
+>b) Sort and Convert the SAM files to BAM files:
+
+>c) Assemble Transcripts For Each Sample:
+
+```
+```
+
+>d) Merge Transcripts From All Samples:
+
+```
+```
+
+>e) Estimate Transcript Abundances and Create Table Counts for Ballgown:
+
+```
+```
+
+### 5. R Analysis
+
+>a) Load Required R Packages:
+
+>b) Read In Expression Data:
+
+>c) Filtering:
+
+>d) Transcript Identification:
+
+>e) Gene Identification:
+
+>f) 
 
 # Conclusion
