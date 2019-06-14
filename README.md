@@ -16,7 +16,7 @@
 
 ### 1. Environment Setup
 
->First Miniconda must be installed and then the provided .yml files can be used to create the environments to complete the rest of the pipeline steps.  To download and set-up Miniconda, enter the following commands in order as they are required. Statments in all caps denote actions to complete.  [Online installation instructions](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) can also be followed to set up Miniconda if desired.
+>a) Install Miniconda: First Miniconda must be installed and then the provided .yml files can be used to create the environments to complete the rest of the pipeline steps.  To download and set-up Miniconda, enter the following commands in order as they are required. Statments in all caps denote actions to complete.  [Online installation instructions](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) can also be followed to set up Miniconda if desired.
     
  ```ruby
  qrsh
@@ -36,13 +36,23 @@
  conda config --add channels conda-forge
  ```
  
- >After Miniconda set-up is completed do not exit conda.  Then create the three environments (Hisat2, Trimmomatic, and R) can be created using the .yml files
+ >b) Create Environments: After Miniconda set-up is completed do not exit conda.  Then create the three environments (Hisat2, Trimmomatic, and R) can be created using the .yml files.
     
  ```ruby
  conda env create -f hisat2_env.yml
  conda env create -f trimmomatic_env.yml
  conda env create -f r_env.yml
  ```
+
+>c) Download R packages: To complete the setup of the R environment, a few packages need to be downloaded into R.  They include ballgown which is used to complete the final data analysis steps, RSkittleBrewer which controls colors for the output, genefilter which is used for quick statistaical calculations, dplyr which sorts and arranges results, and devtools which is used in the instilation of packages.  The following code should be executed line by line to install the packages, folloing any instructions that appear during the download process.
+
+```
+conda activate r_env
+R
+install.packages("devtools")
+source("http://www.bioconductor.org/biocLite.R")
+biocLite(c("alyssafrazee/RSkittleBrewer","ballgown","genefilter","dplyr","devtools"))
+```
 
 ### 2. Data Download
 
@@ -79,7 +89,7 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR151/004/SRR1514794/SRR1514794_2.fa
 
 ### 3. Preprocessing
 
->a) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. The results are included in the folder "fastqc_results".  
+>a) Fastq Quality Check: Fastqc version 0.11.8 was used to measure the phred quality scores across the bases of the fastq samples.  The script "fastqc.sh" measures the quality for all the sample fastq files downloaded. Because "samples.txt" contains the name of each sample the script will generate the results for all samples if executed correctly (with SGE_TASK_ID).  The results are included in the folder "fastqc_results".  
 
 ```
 source ~/.miniconda3rc
@@ -121,7 +131,7 @@ gffread saccharomyces_cerevisiae_R64-2-1_20150113.gff -T -o S288C.gtf
 conda deactivate
 ```
 
->e) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.
+>e) Fastq Trimming: Trimmomatic v. 0.39 was used to prepare the 8x Illumina paired-end reads obtained from the Sequence Read Archive for alignment.  Trimmomatic was used to remove adapters, to remove leading and trailing N bases, to scan reads in windows 4 bases long and remove any where the average base quality score is below 15, to remove reads shorter than 5 bases, and to remove reads with an average quality of less than 20.  As with the Fastqc script above the following Trimmomatic script will generate results for all the samples named in "samples.txt".  This step was completed by executing "trimmomatic.sh".
 
 ```
 SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
@@ -173,13 +183,13 @@ mv S228C_phenodata.csv S288C_data
 
 ### 4. Map Reads
 
-> For parts A, B, and C 
+> Parts A, B, and C were combined into a single script, "bash_steps123.sh" which will generate SAM, BAM, and GTF files for all of the samples named in "samples.txt".
 
->a) Map Sample Reads to Reference Genome: Hisat2 v. 2.1.0 uses the indicies built in part C of the preprocessing stage in order to generate a Sequence Alignment Map (SAM file) aligning the paired fastq reads from each sample to the reference genome.  This step is executed as the first part of the script "bash_steps123.sh".
+>a) Map Sample Reads to Reference Genome: Hisat2 v. 2.1.0 uses the indicies built in part C of the preprocessing stage in order to generate a Sequence Alignment Map (SAM file) aligning the paired fastq reads from each sample to the reference genome.
 
->b) Sort and Convert the SAM files to BAM files: Samtools v. 2349873847238239487 sorts the SAM file generated by Hisat2 and generates a binary version of the SAM file (BAM file) for each of the samples.  This step is executed as the second part of the script "bash_steps123.sh".
+>b) Sort and Convert the SAM files to BAM files: Samtools v. 1.9 sorts the SAM file generated by Hisat2 and generates a binary version of the SAM file (BAM file) for each of the samples.
 
->c) Assemble Transcripts For Each Sample: Stringtie v. 349823487 uses the BAM file generated by Samtools to assemble a transcript (GTF file) for each sample.  This step is executed as the third and final part of the script "bash_steps123.sh"
+>c) Assemble Transcripts For Each Sample: Stringtie v. 1.3.6 uses the BAM file generated by Samtools to assemble a transcript (GTF file) for each sample.
 
 ```
 SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
@@ -197,28 +207,75 @@ stringtie -p 1 -G S288C_data/genes/S288C.gtf -o ${SAMPLE}_S288C.gtf -l ${SAMPLE}
 conda deactivate
 ```
 
->d) Merge Transcripts From All Samples:
+> Parts D and E are combined into a single script named "bash_steps45.sh" which generates a single merged GTF file for all the samples and a few merged comparison files. 
+
+>d) Merge Transcripts From All Samples: Stringtie v. 1.3.6 uses "mergelist.txt" containing the names of all the GTF files generated for each sample and the reference GTF file to create a merged GTF file for all of the samples.
+
+>e) Compare Transcripts to Reference Annotation: Gffcompare v. 0.11.2 compares the merged GTF file generated by Stringtie and the reference GTF file and generates a report of how similar they are.  The output files begin with whatever immediately follows the "-o" which in this case is "merged".  The output files include "merged.annotated.gtf", "merged.loci", "merged.stats", "merged.stringtie_merged.gtf.refmap", "merged.stringtie_merged.gtf.tmap", and "merged.tracking".  This part is optional and is not necessary to complete the rest of the pipeline.
 
 ```
+source ~/.miniconda3rc
+conda activate hisat2
+
+stringtie --merge -p 1 -G S288C_data/genes/S288C.gtf -o stringtie_merged.gtf  S288C_data/mergelist.txt
+gffcompare -r S288C_data/genes/S288C.gtf -G -o merged stringtie_merged.gtf
+
+conda deactivate
 ```
 
->e) Estimate Transcript Abundances and Create Table Counts for Ballgown:
+>e) Estimate Transcript Abundances and Create Table Counts for Ballgown: Stringtie v. 1.3.6 uses the merged GTF file generated by Stringtie in part D and for each sample, generates a GTF file and table counts in a new directory called "ballgown".  This step is accomplished by executing the script "bash_step6.sh".  
 
 ```
+SAMPLE=$(head -n ${SGE_TASK_ID} samples.txt | tail -n 1)
+
+source ~/.miniconda3rc
+conda activate hisat2
+
+stringtie -e -B -p 1 -G stringtie_merged.gtf -o ballgown/${SAMPLE}/${SAMPLE}_S288C.gtf ${SAMPLE}_S288C.bam
+
+conda deactivate
 ```
 
 ### 5. R Analysis
 
->a) Load Required R Packages:
+>The following parts A-Z are all included in the script "R_temp30.sh" and can be executed by using the script or by inputting the code into the proper R environment individially.  The output
 
->b) Read In Expression Data:
+>a) Load Required R Packages: The packages that are required for analysis that have previously been downloaded into R should be loaded in R so that they can be used.  
+
+```
+R
+library(ballgown)
+library(RSkittleBrewer)
+library(genefilter)
+library(dplyr)
+library(devtools)
+```
+
+>b) Read In Expression Data:  This step takes the phenotype data CSV file that was manually created in the preprocessing stage and creates a variable called pheno_data
+
+```
+```
 
 >c) Filtering:
 
+```
+```
+
 >d) Transcript Identification:
+
+```
+```
 
 >e) Gene Identification:
 
+```
+```
+
 >f) 
 
+```
+```
+
 # Conclusion
+
+[Full Final Report](https://docs.google.com/document/d/1OVK1lC2Tv07apcZXxRsIEHGQw2ZwCAVIk3lZTvoO_bk)
