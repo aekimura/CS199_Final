@@ -2,6 +2,270 @@
 
 For this project, our main goal was to compare levels of gene expression among different mutants and growth conditions.  First, Trimmomatic was used to improve the quality of the 8 Illumina S. cerevisiae S288C fastq samples by dropping the low quality reads and identifying only paired reads.  Then HISAT was applied to map the sample fastq reads to the reference genome. Then the alignments were analyzed by StringTie in order to generate transcripts by estimating expression levels for each gene and isoform in the alignment.  The generated transcripts were then merged to a single annotation file by StringTie to create a common set of transcripts for all the samples. Finally, Ballgown determined which genes and transcripts are differentially expressed taking into account the different conditions of the samples.  For our analysis, the samples were divided into two groups by growth temperature (30°C and 37°C), with the first group grown at 30°C contains wild-type and mutant Isw2 samples and the second group grown at 37°C contains mutant Rsc and mutant Ino80 samples.
 
+**Directory Structure**
+.
+|-- ballgown
+|   |-- temp30
+|   |   |-- SRR1257637
+|   |   |   |-- e2t.ctab
+|   |   |   |-- e_data.ctab
+|   |   |   |-- i2t.ctab
+|   |   |   |-- i_data.ctab
+|   |   |   |-- SRR1257637_S288C.gtf
+|   |   |   `-- t_data.ctab
+|   |   |-- SRR1257640
+|   |   |   |-- e2t.ctab
+|   |   |   |-- e_data.ctab
+|   |   |   |-- i2t.ctab
+|   |   |   |-- i_data.ctab
+|   |   |   |-- SRR1257640_S288C.gtf
+|   |   |   `-- t_data.ctab
+|   |   |-- SRR1257793
+|   |   |   |-- e2t.ctab
+|   |   |   |-- e_data.ctab
+|   |   |   |-- i2t.ctab
+|   |   |   |-- i_data.ctab
+|   |   |   |-- SRR1257793_S288C.gtf
+|   |   |   `-- t_data.ctab
+|   |   `-- SRR1259267
+|   |       |-- e2t.ctab
+|   |       |-- e_data.ctab
+|   |       |-- i2t.ctab
+|   |       |-- i_data.ctab
+|   |       |-- SRR1259267_S288C.gtf
+|   |       `-- t_data.ctab
+|   `-- temp37
+|       |-- SRR1514794
+|       |   |-- e2t.ctab
+|       |   |-- e_data.ctab
+|       |   |-- i2t.ctab
+|       |   |-- i_data.ctab
+|       |   |-- SRR1514794_S288C.gtf
+|       |   `-- t_data.ctab
+|       |-- SRR1514795
+|       |   |-- e2t.ctab
+|       |   |-- e_data.ctab
+|       |   |-- i2t.ctab
+|       |   |-- i_data.ctab
+|       |   |-- SRR1514795_S288C.gtf
+|       |   `-- t_data.ctab
+|       |-- SRR1515155
+|       |   |-- e2t.ctab
+|       |   |-- e_data.ctab
+|       |   |-- i2t.ctab
+|       |   |-- i_data.ctab
+|       |   |-- SRR1515155_S288C.gtf
+|       |   `-- t_data.ctab
+|       `-- SRR1515156
+|           |-- e2t.ctab
+|           |-- e_data.ctab
+|           |-- i2t.ctab
+|           |-- i_data.ctab
+|           |-- SRR1515156_S288C.gtf
+|           `-- t_data.ctab
+|-- bash_step6.sh
+|-- bash_steps123.sh
+|-- bash_steps45.sh
+|-- download_data.sh
+|-- fastqc_results
+|   |-- SRR1257637_1_fastqc.html
+|   |-- SRR1257637_1_fastqc.zip
+|   |-- SRR1257637_2_fastqc.html
+|   |-- SRR1257637_2_fastqc.zip
+|   |-- SRR1257640_1_fastqc.html
+|   |-- SRR1257640_1_fastqc.zip
+|   |-- SRR1257640_2_fastqc.html
+|   |-- SRR1257640_2_fastqc.zip
+|   |-- SRR1257793_1_fastqc.html
+|   |-- SRR1257793_1_fastqc.zip
+|   |-- SRR1257793_2_fastqc.html
+|   |-- SRR1257793_2_fastqc.zip
+|   |-- SRR1259267_1_fastqc.html
+|   |-- SRR1259267_1_fastqc.zip
+|   |-- SRR1259267_2_fastqc.html
+|   |-- SRR1259267_2_fastqc.zip
+|   |-- SRR1514794_1_fastqc.html
+|   |-- SRR1514794_1_fastqc.zip
+|   |-- SRR1514794_2_fastqc.html
+|   |-- SRR1514794_2_fastqc.zip
+|   |-- SRR1514795_1_fastqc.html
+|   |-- SRR1514795_1_fastqc.zip
+|   |-- SRR1514795_2_fastqc.html
+|   |-- SRR1514795_2_fastqc.zip
+|   |-- SRR1515155_1_fastqc.html
+|   |-- SRR1515155_1_fastqc.zip
+|   |-- SRR1515155_2_fastqc.html
+|   |-- SRR1515155_2_fastqc.zip
+|   |-- SRR1515156_1_fastqc.html
+|   |-- SRR1515156_1_fastqc.zip
+|   |-- SRR1515156_2_fastqc.html
+|   `-- SRR1515156_2_fastqc.zip
+|-- fastqc.sh
+|-- fastq_download.sh
+|-- gffread.sh
+|-- hisat2_env.yml
+|-- index_builder.sh
+|-- merged.annotated.gtf
+|-- merged.loci
+|-- merged.stats
+|-- merged.stringtie_merged.gtf.refmap
+|-- merged.stringtie_merged.gtf.tmap
+|-- merged.tracking
+|-- preprocessing.sh
+|-- r_env.yml
+|-- Rplots.pdf
+|-- R_temp30.sh
+|-- R_temp37.sh
+|-- S288C_data
+|   |-- genes
+|   |   `-- S288C.gtf
+|   |-- genome
+|   |   |-- S288C_reference_sequence_R64-2-1_20150113_new.fsa
+|   |   `-- S288C_reference_sequence_R64-2-1_20150113_new.fsa.fai
+|   |-- indexes
+|   |   |-- S288C.1.ht2
+|   |   |-- S288C.2.ht2
+|   |   |-- S288C.3.ht2
+|   |   |-- S288C.4.ht2
+|   |   |-- S288C.5.ht2
+|   |   |-- S288C.6.ht2
+|   |   |-- S288C.7.ht2
+|   |   `-- S288C.8.ht2
+|   |-- mergelist.txt
+|   |-- phenotype1.csv
+|   |-- phenotype2.csv
+|   `-- samples
+|       |-- md5sum.o6868713.1
+|       |-- md5sum.o6868713.2
+|       |-- md5sum.o6868713.3
+|       |-- md5sum.o6868713.4
+|       |-- md5sum.o6868713.5
+|       |-- md5sum.o6868713.6
+|       |-- md5sum.o6868713.7
+|       |-- md5sum.o6868713.8
+|       |-- md5sum.sh
+|       |-- samples.txt
+|       |-- SRR1257637_1_paired.fastq.gz
+|       |-- SRR1257637_2_paired.fastq.gz
+|       |-- SRR1257640_1_paired.fastq.gz
+|       |-- SRR1257640_2_paired.fastq.gz
+|       |-- SRR1257793_1_paired.fastq.gz
+|       |-- SRR1257793_2_paired.fastq.gz
+|       |-- SRR1259267_1_paired.fastq.gz
+|       |-- SRR1259267_2_paired.fastq.gz
+|       |-- SRR1514794_1_paired.fastq.gz
+|       |-- SRR1514794_2_paired.fastq.gz
+|       |-- SRR1514795_1_paired.fastq.gz
+|       |-- SRR1514795_2_paired.fastq.gz
+|       |-- SRR1515155_1_paired.fastq.gz
+|       |-- SRR1515155_2_paired.fastq.gz
+|       |-- SRR1515156_1_paired.fastq.gz
+|       `-- SRR1515156_2_paired.fastq.gz
+|-- S288C_reference_sequence_R64-2-1_20150113.fsa
+|-- saccharomyces_cerevisiae_R64-2-1_20150113.gff
+|-- samples.txt
+|-- setup.sh
+|-- SigDE.txt
+|-- SRR1257637_S288C.bam
+|-- SRR1257637_S288C.gtf
+|-- SRR1257637_S288C.sam
+|-- SRR1257640_S288C.bam
+|-- SRR1257640_S288C.gtf
+|-- SRR1257640_S288C.sam
+|-- SRR1257793_S288C.bam
+|-- SRR1257793_S288C.gtf
+|-- SRR1257793_S288C.sam
+|-- SRR1259267_S288C.bam
+|-- SRR1259267_S288C.gtf
+|-- SRR1259267_S288C.sam
+|-- SRR1514794_S288C.bam
+|-- SRR1514794_S288C.gtf
+|-- SRR1514794_S288C.sam
+|-- SRR1514795_S288C.bam
+|-- SRR1514795_S288C.gtf
+|-- SRR1514795_S288C.sam
+|-- SRR1515155_S288C.bam
+|-- SRR1515155_S288C.gtf
+|-- SRR1515155_S288C.sam
+|-- SRR1515156_S288C.bam
+|-- SRR1515156_S288C.gtf
+|-- SRR1515156_S288C.sam
+|-- stringtie_merged.gtf
+|-- temp30_results
+|   |-- MSTRG.194.1.bed
+|   |-- MSTRG.194.1.fa.out
+|   |-- MSTRG.195.3.bed
+|   |-- MSTRG.195.3.fa.out
+|   |-- MSTRG.318.1.bed
+|   |-- MSTRG.318.1.fa.out
+|   |-- MSTRG.347.1.bed
+|   |-- MSTRG.347.1.fa.out
+|   |-- MSTRG.369.3.bed
+|   |-- MSTRG.369.3.fa.out
+|   |-- MSTRG.64.2.bed
+|   |-- MSTRG.64.2.fa.out
+|   |-- MSTRG.64.3.bed
+|   `-- MSTRG.64.3.fa.out
+|-- temp30_significant.csv
+|-- temp37_results
+|   |-- MSTRG.106.1.bed
+|   |-- MSTRG.106.1.fa.out
+|   |-- MSTRG.13.1.bed
+|   |-- MSTRG.13.1.fa.out
+|   |-- MSTRG.144.2.bed
+|   |-- MSTRG.144.2.fa.out
+|   |-- MSTRG.179.3.bed
+|   |-- MSTRG.179.3.fa.out
+|   |-- MSTRG.187.1.bed
+|   |-- MSTRG.187.1.fa.out
+|   |-- MSTRG.276.4.bed
+|   |-- MSTRG.276.4.fa.out
+|   |-- MSTRG.28.1.bed
+|   |-- MSTRG.28.1.fa.out
+|   |-- MSTRG.33.1.bed
+|   |-- MSTRG.33.1.fa.out
+|   |-- MSTRG.43.5.bed
+|   |-- MSTRG.43.5.fa.out
+|   |-- MSTRG.89.1.bed
+|   `-- MSTRG.89.1.fa.out
+|-- temp37_significant.csv
+|-- trimmomatic_env.yml
+|-- trimmomatic.sh
+|-- unpaired_fastq
+|   |-- SRR1257637_1_unpaired.fastq.gz
+|   |-- SRR1257637_2_unpaired.fastq.gz
+|   |-- SRR1257640_1_unpaired.fastq.gz
+|   |-- SRR1257640_2_unpaired.fastq.gz
+|   |-- SRR1257793_1_unpaired.fastq.gz
+|   |-- SRR1257793_2_unpaired.fastq.gz
+|   |-- SRR1259267_1_unpaired.fastq.gz
+|   |-- SRR1259267_2_unpaired.fastq.gz
+|   |-- SRR1514794_1_unpaired.fastq.gz
+|   |-- SRR1514794_2_unpaired.fastq.gz
+|   |-- SRR1514795_1_unpaired.fastq.gz
+|   |-- SRR1514795_2_unpaired.fastq.gz
+|   |-- SRR1515155_1_unpaired.fastq.gz
+|   |-- SRR1515155_2_unpaired.fastq.gz
+|   |-- SRR1515156_1_unpaired.fastq.gz
+|   `-- SRR1515156_2_unpaired.fastq.gz
+`-- untrimmed_fastq
+    |-- SRR1257637_1.fastq.gz
+    |-- SRR1257637_2.fastq.gz
+    |-- SRR1257640_1.fastq.gz
+    |-- SRR1257640_2.fastq.gz
+    |-- SRR1257793_1.fastq.gz
+    |-- SRR1257793_2.fastq.gz
+    |-- SRR1259267_1.fastq.gz
+    |-- SRR1259267_2.fastq.gz
+    |-- SRR1514794_1.fastq.gz
+    |-- SRR1514794_2.fastq.gz
+    |-- SRR1514795_1.fastq.gz
+    |-- SRR1514795_2.fastq.gz
+    |-- SRR1515155_1.fastq.gz
+    |-- SRR1515155_2.fastq.gz
+    |-- SRR1515156_1.fastq.gz
+    `-- SRR1515156_2.fastq.gz
+
 # Pipeline
 
 [**1. Environment Setup**](#1-environment-setup)
