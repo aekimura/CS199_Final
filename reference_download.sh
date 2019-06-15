@@ -1,7 +1,5 @@
 #!/bin/bash
 
-qsub sra_explorer_fastq_download.sh
-
 wget https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-2-1_20150113.tgz
 tar xvzf S288C_reference_genome_R64-2-1_20150113.tgz
 cd S288C_reference_genome_R64-2-1_20150113
