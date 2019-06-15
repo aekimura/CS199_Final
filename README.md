@@ -3,6 +3,8 @@
 For this project, our main goal was to compare levels of gene expression among different mutants and growth conditions.  First, Trimmomatic was used to improve the quality of the 8 Illumina S. cerevisiae S288C fastq samples by dropping the low quality reads and identifying only paired reads.  Then HISAT was applied to map the sample fastq reads to the reference genome. Then the alignments were analyzed by StringTie in order to generate transcripts by estimating expression levels for each gene and isoform in the alignment.  The generated transcripts were then merged to a single annotation file by StringTie to create a common set of transcripts for all the samples. Finally, Ballgown determined which genes and transcripts are differentially expressed taking into account the different conditions of the samples.  For our analysis, the samples were divided into two groups by growth temperature (30°C and 37°C), with the first group grown at 30°C contains wild-type and mutant Isw2 samples and the second group grown at 37°C contains mutant Rsc and mutant Ino80 samples.
 
 **Directory Structure**
+
+```
 .
 |-- ballgown
 |   |-- temp30
@@ -265,6 +267,8 @@ For this project, our main goal was to compare levels of gene expression among d
     |-- SRR1515155_2.fastq.gz
     |-- SRR1515156_1.fastq.gz
     `-- SRR1515156_2.fastq.gz
+    
+```
 
 # Pipeline
 
