@@ -431,7 +431,7 @@ AVGQUAL:20
 conda deactivate
 ```
 
->f) Text File Creation: A few text files that are necessary to the running of the analysis steps of the pipline needed to be manually created at this point.  "samples.txt", "mergelist.txt", and "phenodata.csv" were all generated to fit the samples that were downloaded.  "samples.txt" contains a list of the sample names, one per line.  "mergelist.txt" contains the names of the GTF files that are to be generated later by Stringtie.  "phenodata.csv" contains information about the Illumina samples that were downloaded.  All three files are available to download on github.  
+>f) Text File Creation: A few text files that are necessary to the running of the analysis steps of the pipline needed to be manually created at this point.  "samples.txt", "mergelist.txt", "phenodata1.csv", and "phenotypedata2.csv" were all generated to fit the samples that were downloaded.  "samples.txt" contains a list of the sample names, one per line.  "mergelist.txt" contains the names of the GTF files that are to be generated later by Stringtie.  "phenodata1.csv" and "phenodata2.csv"contain information about the Illumina samples that were downloaded.  All four files are available to download on github.  
 
 >g) Move Files:  In the final step before beginning to analyze the sample data, the files need to be arranged into the correct directories so that the scripts can be executed.  Directory creation and file moving are handled by the script "setup.sh".  
 
