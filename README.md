@@ -439,14 +439,27 @@ output[1:25,c(1,4,5)]
 
 ### 6. Analyze Significant Transcripts
 
->a) 
+>a) Without exiting the R environment, if the commands have been input manually, the following script can be executed in order to extract the fasta sequences for the transcripts that have been identified as the most differentially expressed.  If the R analysis part was executed as part of a script, then complete parts A-C manually and use the gene IDs from the significant results output file "temp30_significant.csv" to complete the following. The first step outputs the name of the significant transcript, just change the gene ID.  The second step generates a bed file which allows Bedtools to extract the relevant transcript from the reference fasta file.  
 
 ```
-ballgown::transcriptNames(bg_genome)[582]
+ballgown::transcriptNames(bg_genome)[GENEID]
 grep -a "MSTRG.347.810" stringtie_merged.gtf | head -n 1 > MSTRG.347.810.bed
 bedtools getfasta -fi S288C.fa -bed MSTRG.347.810.bed -fo MSTRG.347.810.bed.fa.out
 ```
 
+>b) BLAST analysis: Take the sequence obtained in part A and use [UniProt](https://www.uniprot.org/blast/) to blast the transcript against the UniProtKb database.  The results will show which genes in the database the transcript shows similarities to, thus showing genes that have been identified to be differentially expressed by the pipeline.
+
+
+
 # Conclusion
 
-[Full Final Report](https://docs.google.com/document/d/1OVK1lC2Tv07apcZXxRsIEHGQw2ZwCAVIk3lZTvoO_bk)
+For this project, our main goal was to compare levels of gene expression among different mutants and growth conditions.  First, Trimmomatic was used to improve the quality of the 8 Illumina S. cerevisiae S288C fastq samples by dropping the low quality reads and identifying only paired reads.  Then HISAT was applied to map the sample fastq reads to the reference genome. Then the alignments were analyzed by StringTie in order to generate transcripts by estimating expression levels for each gene and isoform in the alignment.  The generated transcripts were then merged to a single annotation file by StringTie to create a common set of transcripts for all the samples. Finally, Ballgown determined which genes and transcripts are differentially expressed taking into account the different conditions of the samples.  For our analysis, the samples were divided into two groups by growth temperature (30°C and 37°C), with the first group grown at 30°C contains wild-type and mutant Isw2 samples and the second group grown at 37°C contains mutant Rsc and mutant Ino80 samples.
+
+The first group of samples, those grown at 30°C , contained two replicates each of the wild-type and the mutant Isw2 strains which are briefly described in Table 2.  The Isw2 mutant has an extra itc1::NatMx allele. The gene itc1 is a subunit of ATP-dependent Isw2p-itc1p chromatin remodeling complex.  It is required for the repression of a-specific genes, of early meiotic genes during mitotic growth, and of the gene INO1.  Thus, we expect that upon comparison, because of the extra itc1 copy present in the Isw2 mutant, genes relating to the Isw2p-itc1p chromatin remodeling complex to be higher in the Isw2 mutant while the genes that are repressed by the complex, meiotic genes or INO1, may be more highly expressed in the wild-type strains.  As shown in Table 8, the transcripts that were identified as the most significantly differentially expressed between the two strains include the chromatin-remodeling ATPase INO80 (MSTRG.347.1) and other chromatin structure remodeling complexes (MSTRG.369.3).  Thus, is seems as though analysis of these Illumina fastq samples with the HISAT-StringTie-Ballgown pipeline was able to with some accuracy identify transcripts relating to genes that we expect to be differentially expressed between wild-type and Isw2 mutants.  
+
+The second group of samples, those grown at 37°C,  contained two replicates each of the mutant Rsc and mutant Ino80 strains which are described in Table 2.  The chromatin structure remodeling (Rsc) mutant and the mutant Ino80 differ by their ATP-dependent chromatin remodellers: Rsc and Ino80.  The Rsc complex belongs the the ATP-dependent chromatin remodeller family and  functions in transcriptional regulation and elongation, chromosome stability, establishing sister chromatid cohesion, and telomere maintenance. Ino80 is an ATPase and nucleosome spacing factor and a subunit of actin and actin related proteins that promotes nucleosome shift in the 3’ direction.  We expected to see differential expression between these two samples in proteins relating to chromatin remodeling or something similar.  As shown by the blast analysis of the transcripts identified as the most significantly differentially expressed between the two strains in Table 9, the identified transcripts aligned with a large variation of genes.  However, the genes that were identified do not seem to have much of a correlation to chromatin remodeling as expected.  This discrepancy could be due to data quality of the original RNA-seq data provided as analyzed by Fastqc (analysis results available on Github).  Another possible reason for these results could be that there are additional confounding factors affecting gene expression in the two mutants being compared. 
+
+Overall, we were able to successfully implement the differential expression analysis pipeline as outlined by Pertea, M. et al. in order to compare gene expression across samples of different conditions using RNA-seq data.  Future implementation of the pipeline would include sample data of higher quality and perhaps more downstream comparison of different strains to the wild-type data using population as the differential variable instead of growth temperature to determine whether growth temperature or genetic background has a greater expression of gene expression in S. cerevisiae S288C.
+
+
+[**Full Final Report**](https://docs.google.com/document/d/1OVK1lC2Tv07apcZXxRsIEHGQw2ZwCAVIk3lZTvoO_bk)
