@@ -464,7 +464,7 @@ bedtools getfasta -fi S288C.fa -bed MSTRG.347.810.bed -fo MSTRG.347.810.bed.fa.o
 
 >b) BLAST analysis: Take the sequence obtained in part A and use [UniProt](https://www.uniprot.org/blast/) to blast the transcript against the UniProtKb database.  The results will show which genes in the database the transcript shows similarities to, thus showing genes that have been identified to be differentially expressed by the pipeline.
 
-
+![](https://github.com/aekimura/CS199_Final/blob/master/images/blast.png)
 
 # Conclusion
 
